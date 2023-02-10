@@ -3,22 +3,104 @@
 <head>
     <meta charset="UTF-8" />
     <!-- https://developer.mozilla.org/ja/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
-    <title>初めてのElectron</title>
+
+    <link rel="stylesheet" href="style.css">
+    <title>video</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+    <link href="jquery-treetable-3.2.0/css/jquery.treetable.css" rel="stylesheet" type="text/css" />
+    <link href="jquery-treetable-3.2.0/css/jquery.treetable.theme.default.css" rel="stylesheet" type="text/css" />
+    <script src="jquery-treetable-3.2.0/jquery.treetable.js"></script>
 </head>
 
 <body>
-    <h1>初めてのElectron</h1>
-    <p>
-        We are using Node.js <span id="node-version"></span>,<br />
-        Chromium <span id="chrome-version"></span>,<br />
-        and Electron <span id="electron-version"></span>.
+    <div id="main">
+        <div class="navi">
+            <button id="add_button">ADD</button>
+            <button id="load_button">LOAD</button>
+            <button id="save_button">SAVE</button>
+        </div>
+        <div class="frames">
+            <div class="chapters frame left" id="left_frame">
+                <div class="sizable">
+                    <div id="chapters">
+                        <div id="video_info">
+                            <table>
+                                <tr><td>DateNow</td><td id="date_now"></td></tr>
+                                <tr><td>currentTime</td><td><span id="video_current_time_hhmmss"></span>   <span id="video_current_time"></span></td></tr>
+                                <tr><td>StartDate</td><td id="video_start_date"></td></tr>
+                                <tr><td>play</td><td id="video_play_status"></td></tr>
+                            </table>
+                        </div>
+                        <table id="chapter_table">
+                            <thead>
+                                <tr>
+                                    <th>Caption</th>
+                                    <th>Timestamp</th>
+                                    <th>Time</th>
+                                    <th>memo</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="dragbox"></div>
+                </div>
+            </div>
+            <div id="right_frame">
+                <video class="frame right" src="sample.mp4" controls></video>
+                <button id="hide_video" class="btn">X</button>
+            </div>
+        </div>
+    </div>
 
 
 
-        <div id="ret"></div>
-        <script src="./renderer.js"></script>
-    </p>
+    <script>
+        $("#your_table_id").treetable();
+
+        $("#example-advanced").treetable({ expandable: true });
+
+        // Highlight selected row
+        $("#example-advanced tbody").on("mousedown", "tr", function () {
+            $(".selected").not(this).removeClass("selected");
+            $(this).toggleClass("selected");
+        });
+
+        // Drag & Drop Example Code
+        $("#example-advanced .file, #example-advanced .folder").draggable({
+            helper: "clone",
+            opacity: .75,
+            refreshPositions: true,
+            revert: "invalid",
+            revertDuration: 300,
+            scroll: true
+        });
+
+        $("#example-advanced .folder").each(function () {
+            $(this).parents("#example-advanced tr").droppable({
+                accept: ".file, .folder",
+                drop: function (e, ui) {
+                    var droppedEl = ui.draggable.parents("tr");
+                    $("#example-advanced").treetable("move", droppedEl.data("ttId"), $(this).data("ttId"));
+                },
+                hoverClass: "accept",
+                over: function (e, ui) {
+                    var droppedEl = ui.draggable.parents("tr");
+                    if (this != droppedEl[0] && !$(this).is(".expanded")) {
+                        $("#example-advanced").treetable("expandNode", $(this).data("ttId"));
+                    }
+                }
+            });
+        });
+    </script>
+
+
+    <script src="./doc.js"></script>
+    <!-- <script src="./renderer.js"></script> -->
 </body>
 
 </html>

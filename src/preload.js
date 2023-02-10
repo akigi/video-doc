@@ -7,6 +7,10 @@ contextBridge.exposeInMainWorld('versions', {
     // 関数だけでなく、変数も公開できます
 })
 
+contextBridge.exposeInMainWorld('db', {
+    records: {}
+})
+
 
 // Node.jsのすべてのAPIがプリロード処理で利用可能です。
 // Chromeの拡張機能と同じサンドボックスを持っています。
