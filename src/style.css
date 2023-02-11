@@ -24,10 +24,9 @@ html,body{
 }
 
 .navi > button, .btn {
-    background-color: white;
+    background-color: rgba(126, 126, 126, 0.568);
     border: 0;
     padding: 6px;
-    border-radius: 6px;
     cursor: pointer;
 }
 

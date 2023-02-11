@@ -40,10 +40,10 @@ dragbox.addEventListener("dblclick", e => {
     console.log("dblclick")
     e.preventDefault();
     video_hidden = !video_hidden;
-    if(video_hidden){
-        document.querySelector("#left_frame").style.width= "100%";
+    if (video_hidden) {
+        document.querySelector("#left_frame").style.width = "100%";
     }
-    else{
+    else {
         document.querySelector("#right_frame").style.display = "block";
     }
 });
@@ -57,35 +57,35 @@ var video = document.querySelector("video");
 
 video.addEventListener("timeupdate", e => {
     // document.querySelector("#video_current_time").innerHTML = `(${video.currentTime})`;
-    
+
     let t = video.currentTime;
     let th = t / 3600.0;
-    let tm = (t - Math.floor(th)*3600.0) / 60.0;
-    let ts = (t - Math.floor(th)*3600.0 - Math.floor(tm)*60.0)
+    let tm = (t - Math.floor(th) * 3600.0) / 60.0;
+    let ts = (t - Math.floor(th) * 3600.0 - Math.floor(tm) * 60.0)
     ts = Math.floor(ts);
     let hh = video.currentTime
-    let s = (th>0 ? Math.floor(th)+":":"") + (Math.floor(tm)+":") + (ts)
+    let s = (th > 0 ? Math.floor(th) + ":" : "") + (Math.floor(tm) + ":") + (ts)
     document.querySelector("#video_current_time_hhmmss").innerHTML = s;
 
-    
+
 })
 
-function time2timestamp(t){
+function time2timestamp(t) {
     let th = t / 3600.0;
-    let tm = (t - Math.floor(th)*3600.0) / 60.0;
-    let ts = (t - Math.floor(th)*3600.0 - Math.floor(tm)*60.0)
+    let tm = (t - Math.floor(th) * 3600.0) / 60.0;
+    let ts = (t - Math.floor(th) * 3600.0 - Math.floor(tm) * 60.0)
     ts = Math.floor(ts);
     let hh = video.currentTime
-    let s = (Math.floor(th)>0 ? Math.floor(th)+":":"") + (Math.floor(tm)+":") + (ts)
+    let s = (Math.floor(th) > 0 ? Math.floor(th) + ":" : "") + (Math.floor(tm) + ":") + (ts)
     return s;
 }
 
-function timestamp2time(timestamp){
+function timestamp2time(timestamp) {
     let sp = timestamp.split(":").reverse();
     let th = 0;
     let tm = 0;
     let ts = 0;
-    switch(sp.length-1){
+    switch (sp.length - 1) {
         case 2:
             th = Number(sp[2])
         case 1:
@@ -95,7 +95,7 @@ function timestamp2time(timestamp){
             break;
         default:
     }
-    let t = th*3600.0 + tm*60.0 + ts;
+    let t = th * 3600.0 + tm * 60.0 + ts;
     return t;
 }
 
@@ -105,12 +105,12 @@ document.querySelector("#add_button").addEventListener("click", e => {
 
     let tr = document.createElement("tr");
     tr.dataset.t = t;
-    
+
     let td1 = document.createElement("td");
     td1.innerHTML = "hoge";
     td1.setAttribute("contenteditable", "true");
     tr.appendChild(td1);
-    
+
     let td2 = document.createElement("td");
     td2.innerHTML = time2timestamp(t);
     td2.classList.add("timestamp")
@@ -127,7 +127,7 @@ document.querySelector("#add_button").addEventListener("click", e => {
         td3.parentElement.querySelector(".time").innerHTML = timestamp_input_t;
     });
     tr.appendChild(td2);
-    
+
     let td3 = document.createElement("td");
     td3.innerHTML = t;
     td3.setAttribute("contenteditable", "true");
@@ -144,7 +144,7 @@ document.querySelector("#add_button").addEventListener("click", e => {
         td3.parentElement.querySelector(".timestamp").innerHTML = t_input_timestamp;
     });
     tr.appendChild(td3);
-    
+
     let td4 = document.createElement("td");
     tr.appendChild(td4);
     let jump_button = document.createElement("button");
@@ -156,7 +156,12 @@ document.querySelector("#add_button").addEventListener("click", e => {
     jump_button.innerHTML = "Jump"
     jump_button.classList.add("jump_button");
     td4.appendChild(jump_button);
-    
+    let delete_button = document.createElement("button");
+    delete_button.onclick = (tr => { return () => tr.remove() = t })(tr);
+    delete_button.innerHTML = "X"
+    delete_button.classList.add("delete_button");
+    td4.appendChild(delete_button);
+
     document.querySelector("#chapter_table").appendChild(tr);
 });
 
@@ -167,9 +172,10 @@ document.querySelector("#add_button").addEventListener("click", e => {
     let timestamp = time2timestamp(t);
 
     let jump_button = document.createElement("button");
-    jump_button.onclick = (t=>{return () => video.currentTime = t})(t);
+    jump_button.onclick = (t => { return () => video.currentTime = t })(t);
     jump_button.innerHTML = "Jump"
     jump_button.classList.add("jump_button");
+
 
 
     let tbl = $('#chapter_table').DataTable();
@@ -184,7 +190,55 @@ document.querySelector("#add_button").addEventListener("click", e => {
 
 document.querySelector("#save_button").addEventListener("click", e => {
     let chapter_table = document.querySelector("#chapter_table");
+
+});
+
+const constraints = {
+  video: {
+    width: {
+      min: 1280,
+      ideal: 1920,
+      max: 2560,
+    },
+    height: {
+      min: 720,
+      ideal: 1080,
+      max: 1440
+    },
+  }
+};
+
+
+document.querySelector("#select_camera").addEventListener("change", e => {
+    console.log(e);
+    console.log(e.target.value)
+
+    const deviceId = e.target.value;
+    const stream = navigator.mediaDevices.getUserMedia({...constraints, deviceId: {exact: deviceId}})
     
+    stream.then(s => {
+        console.log(s);
+        video.srcObject = s;
+    })
+    
+
+
+});
+
+navigator.mediaDevices.getUserMedia({video: true})
+
+
+navigator.mediaDevices.enumerateDevices().then(function (devices) {
+    console.log(devices)
+    for (var i = 0; i < devices.length; i++) {
+        var device = devices[i];
+        if (device.kind === 'videoinput') {
+            let option = document.createElement('option');
+            option.value = device.deviceId;
+            option.text = device.label || 'camera ' + (i + 1);
+            document.querySelector('select#select_camera').appendChild(option);
+        }
+    };
 });
 
 $("#chapter_table").treetable({ expandable: true });
